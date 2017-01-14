@@ -17,8 +17,8 @@
  typedef struct {
  	size_t sampleCount;
  	size_t featureCount;
- 	std::vector<std::vector<lDouble> > data;
- 	std::vector<lDouble> target;
+ 	MachMatrix data;
+ 	MachVector target;
  } fileContents_t;
  
  

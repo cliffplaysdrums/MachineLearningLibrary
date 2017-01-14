@@ -5,6 +5,17 @@
  * License: GPL
  *
  * This header contains custom types used by my machine learning library.
+ * By default, Mach containers use the long double type.
  */
- 
-  typedef long double lDouble;
+
+/* Future Possibilities:
+ *
+ * Add non-double containers (e.g. MachMatrix_i for int)
+ */
+
+typedef long double MachDouble;
+
+template <typename T> class Row;
+typedef std::vector<Row<MachDouble> > MachMatrix;
+
+typedef std::vector<MachDouble>

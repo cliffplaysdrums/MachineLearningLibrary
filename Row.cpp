@@ -8,14 +8,20 @@
  * added functionality such as multiplication of whole rows
  */
  
- #include "headers.h"
+#include "headers.h"
  
- class Row {
- 	public:
- 		std::vector<lDouble> contents;
- 		Row();
- }
- 
- Row::Row() {
- 
- }
+template <typename T> class Row {
+	public:
+		std::vector<T> contents;
+		Row();
+		T multiply(Row);
+}
+
+Row::Row() {
+
+}
+
+template <typename T>
+Row::T multiply(Row r) {
+	return 0;
+}
