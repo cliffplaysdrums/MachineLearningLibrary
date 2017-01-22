@@ -18,4 +18,4 @@ typedef long double MachDouble;
 template <typename T> class Row;
 typedef std::vector<Row<MachDouble> > MachMatrix;
 
-typedef std::vector<MachDouble>
+typedef std::vector<MachDouble> MachVector;
