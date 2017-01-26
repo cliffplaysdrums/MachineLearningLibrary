@@ -58,7 +58,7 @@
 		 		r.push_back(std::stold(item));
 		 	}
 	 	
-	 		r.pop_back();
+	 		r.pop_back(); // remove last item
 	 		fileContents.target.push_back(std::stold(item));
 		 	fileContents.data.push_back(r);
  		}
@@ -79,5 +79,7 @@
  int main() {
  	Parser P;
  	P.parse("Datasets/iris.csv");
+ 	fileContents_t fileContents = *(P.getData());
+ 	std::cout << fileContents.data[0] * (fileContents.data[1]) << std::endl;
  	return 0;
  }

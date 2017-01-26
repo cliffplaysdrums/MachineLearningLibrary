@@ -9,38 +9,55 @@
  */
  
  /* TODO:
-  *	Consider making 'contents' private.
-  *	Make push_back check for error and return int
+  *	Consider making 'contents' private and overload operators to access it
+  *	Make push_back and pop_back check for error and return int
   */
  
 #include "headers.h"
+#include <string>
+
+using std::string;
+using std::vector;
+ 
  
 template <typename T> class Row {
 	public:
-		std::vector<T> contents;
+		vector<T> contents;
+		string lastError; // error message to aid debugging
 		
-		Row();
-		void push_back(T);
-		T multiply(Row);
-		void pop_back();
+		Row(); // constructor
+		
+		// public functions
+		void push_back(T item) { contents.push_back(item); }
+		void pop_back() { contents.pop_back(); }
+		
+		// operator overloading
+		MachDouble operator*(const Row<T>&);
 };
+
 
 template <typename T> 
 Row<T>::Row() {
-
+	lastError = "";
 }
 
+
+/* Define * operator to return a sum of products of the corresponding elements
+ of 2 rows of equal size */
 template <typename T>
-void Row<T>::push_back(T item) {
-	contents.push_back(item);
+MachDouble Row<T>::operator*(const Row<T>& other) {
+	if (contents.size() != other.contents.size()) {
+		lastError = "Multiplied to multiply 2 rows of different lengths";
+	}
+	
+	T sumOfProducts = 0;
+	size_t index = 0;
+	
+	for(T elem : contents) {
+		sumOfProducts += elem * other.contents[index];
+		index++;
+	}
+	
+	return sumOfProducts;
 }
 
-template <typename T>
-T Row<T>::multiply(Row<T> r) {
-	return 0;
-}
-
-template <typename T>
-void Row<T>::pop_back() {
-	contents.pop_back();
-}
