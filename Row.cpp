@@ -14,11 +14,10 @@
   */
  
 #include "headers.h"
-#include <string>
 
-using std::string;
-using std::vector;
- 
+// Prototypes
+template <typename T> T operator*(const T&, const Row<T>&);
+
  
 template <typename T> class Row {
 	public:
@@ -32,20 +31,23 @@ template <typename T> class Row {
 		void pop_back() { contents.pop_back(); }
 		
 		// operator overloading
-		MachDouble operator*(const Row<T>&);
+		T operator*(const Row<T>&);
+		T operator*(const T&);
+		
 };
 
 
+/* Constructor */
 template <typename T> 
 Row<T>::Row() {
 	lastError = "";
 }
 
 
-/* Define * operator to return a sum of products of the corresponding elements
- of 2 rows of equal size */
+/* Overload Row<T> * Row<T> to return a sum of products of the corresponding 
+ element of 2 rows */
 template <typename T>
-MachDouble Row<T>::operator*(const Row<T>& other) {
+T Row<T>::operator*(const Row<T>& other) {
 	if (contents.size() != other.contents.size()) {
 		lastError = "Multiplied to multiply 2 rows of different lengths";
 	}
@@ -56,6 +58,32 @@ MachDouble Row<T>::operator*(const Row<T>& other) {
 	for(T elem : contents) {
 		sumOfProducts += elem * other.contents[index];
 		index++;
+	}
+	
+	return sumOfProducts;
+}
+
+
+/* Overload Row<T> * T to return a sum of products */
+template <typename T>
+T Row<T>::operator*(const T& other) {
+	T sumOfProducts = 0;
+	
+	for (T elem : contents) {
+		sumOfProducts += elem * other;
+	}
+	
+	return sumOfProducts;
+}
+
+
+/* Overload T * Row<T> to return a sum of products */
+template <typename T>
+T operator*(const T& primitive, const Row<T>& other) {
+	T sumOfProducts = 0;
+	
+	for (T elem : other.contents) {
+		sumOfProducts += elem * primitive;
 	}
 	
 	return sumOfProducts;

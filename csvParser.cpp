@@ -16,7 +16,6 @@
  
  #include <iostream>
  #include <fstream>
- #include <string>
  #include <sstream>
  #include "headers.h"
   
@@ -25,7 +24,7 @@
  	size_t sampleCount;
  	size_t featureCount;
  	MachMatrix data;
- 	MachVector target;
+ 	vector<MachDouble> target;
  } fileContents_t;
  
  
@@ -79,7 +78,8 @@
  int main() {
  	Parser P;
  	P.parse("Datasets/iris.csv");
+ 	long double test = 1.0;
  	fileContents_t fileContents = *(P.getData());
- 	std::cout << fileContents.data[0] * (fileContents.data[1]) << std::endl;
+ 	std::cout << test * fileContents.data[0] << std::endl;
  	return 0;
  }

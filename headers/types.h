@@ -13,9 +13,10 @@
  * Add non-double containers (e.g. MachMatrix_i for int)
  */
 
+using std::string;
+using std::vector;
+
+template <typename T> class Row; // forward declaration necessary
+ 
 typedef long double MachDouble;
-
-template <typename T> class Row;
-typedef std::vector<Row<MachDouble> > MachMatrix;
-
-typedef std::vector<MachDouble> MachVector;
+//typedef vector<Row<MachDouble> > MachMatrix;
