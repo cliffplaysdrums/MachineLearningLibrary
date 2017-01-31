@@ -29,6 +29,8 @@ template <typename T> class Row {
 		// public functions
 		void push_back(T item) { contents.push_back(item); }
 		void pop_back() { contents.pop_back(); }
+		size_t size() { return contents.size(); }
+		bool empty() { return contents.size(); }
 		
 		// operator overloading
 		T operator*(const Row<T>&);
