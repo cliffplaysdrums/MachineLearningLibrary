@@ -17,7 +17,7 @@
  		MachMatrix() { lastError = ""; }
  		
  		// common vector functions
- 		void push_back(Row<T>);
+ 		void push_back(Row<T>& r) { matrix.push_back(r); }
  		size_t size() { return matrix.size(); }
  		bool empty() { return matrix.empty(); }
  		
@@ -29,18 +29,14 @@
  };
  
  
- template <typename T>
- void MachMatrix<T>::push_back(Row<T> r) {
- 	matrix.push_back(r);
- }
- 
- 
+ // Overload []
  template <typename T>
  Row<T> MachMatrix<T>::operator[](size_t index) {
  	return matrix[index];
  }
  
  
+ // Matrix multiplication
  template <typename T>
  MachMatrix<T> MachMatrix<T>::operator*(const MachMatrix<T>& mat) {
  	if (matrix.size() < 1 || mat.empty()) {
