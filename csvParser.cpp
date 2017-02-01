@@ -23,7 +23,7 @@
  typedef struct {
  	size_t sampleCount;
  	size_t featureCount;
- 	MachMatrix data;
+ 	MachMatrix<MachDouble> data;
  	vector<MachDouble> target;
  } fileContents_t;
  
