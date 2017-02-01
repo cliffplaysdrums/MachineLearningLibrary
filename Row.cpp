@@ -35,7 +35,7 @@ template <typename T> class Row {
 		// operator overloading
 		T operator*(const Row<T>&);
 		T operator*(const T&);
-		
+		T operator[](const size_t& index) { return contents[index]; };
 };
 
 
