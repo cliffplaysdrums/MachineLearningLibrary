@@ -76,10 +76,38 @@
  
  /*********************************************/
  int main() {
+ 	using std::cout;
+ 	using std::endl;
+ 	
  	Parser P;
  	P.parse("Datasets/iris.csv");
  	long double test = 1.0;
  	fileContents_t fileContents = *(P.getData());
- 	std::cout << test * fileContents.data[0] << std::endl;
+ 	cout << test * fileContents.data[0] << endl;
+ 	
+ 	cout << "Testing Mach Matrix" << endl;
+ 	
+ 	MachMatrix<MachDouble> A, B, C;
+ 	
+ 	for (int i=0; i<3; i++) {
+ 		Row<MachDouble> r;
+ 		
+ 		for (int j=0; j<3; j++) {
+ 			r.push_back(1);
+ 		}
+ 		
+ 		A.push_back(r);
+ 		B.push_back(r);
+ 	}
+ 	
+ 	C = A * B;
+ 	
+ 	for (int i=0; i<3; i++) {
+ 		for (int j=0; j<3; j++) {
+ 			cout << C[i][j] << " ";
+ 		}
+ 		
+ 		cout << endl;
+ 	}
  	return 0;
  }
