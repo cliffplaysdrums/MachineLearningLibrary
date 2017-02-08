@@ -22,13 +22,44 @@
  		size_t size() const { return matrix.size(); }
  		bool empty() const { return matrix.empty(); }
  		
+ 		// Useful functions
+ 		MachMatrix<T>& transpose(const MachMatrix<T>&);
+ 		
  		// Operator overloading
  		Row<T> operator[](size_t index) const { return matrix[index]; }
  		MachMatrix<T> operator*(const MachMatrix<T>&);
  
  	private:
  		vector<Row<T> > matrix;
+ 		vector<Row<T> > transposedMatrix;
+ 		bool hasBeenTransposed = false;
  };
+ 
+ 
+ template <typename T>
+ MachMatrix<T>& MachMatrix<T>::transpose(const MachMatrix<T>& mat) {
+ 	if (matrix.empty()) {
+ 		lastError = "Attempted to transpose empty matrix.";
+ 		throw std::invalid_argument(lastError);
+ 	} else if (hasBeenTransposed) {
+ 		return transposedMatrix;
+ 	}
+ 	
+ 	transposedMatrix.resize(matrix[0].size());
+ 	hasBeenTransposed = true;
+ 	
+ 	for (int col=0; col<matrix[0].size(); col++) {
+ 		Row<T> r;
+ 		
+ 		for (int row=0; row<matrix.size(); row++) {
+ 			r.push_back(matrix[row][col]);
+ 		}
+ 		
+ 		transposedMatrix.push_back(r);
+ 	}
+ 	
+ 	return transposedMatrix;
+ }
  
  
  /* Overload MachMatrix * MachMatrix to perform matrix multiplication
@@ -40,7 +71,7 @@
  template <typename T>
  MachMatrix<T> MachMatrix<T>::operator*(const MachMatrix<T>& matB) {
  	// Check if either argument is empty
- 	if (matrix.size() < 1 || matB.empty()) {
+ 	if (matrix.empty() || matB.empty()) {
  		lastError = "One of the matrices was empty.";
  		throw std::invalid_argument(lastError);
  	}
