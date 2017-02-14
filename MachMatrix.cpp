@@ -15,15 +15,19 @@
  	public:
  		string lastError;
  		
+ 		// Constructors
  		MachMatrix() { lastError = ""; }
- 		
- 		// common vector functions
- 		void push_back(Row<T>& r) { matrix.push_back(r); }
+ 		MachMatrix(const vector<Row<T> >& copyFrom) {
+ 			lastError = "";
+ 			matrix = copyFrom;
+ 		}
+ 		// Common vector functions
+ 		void push_back(Row<T>& r) { matrix.push_back(r); hasBeenTransposed = false; }
  		size_t size() const { return matrix.size(); }
  		bool empty() const { return matrix.empty(); }
  		
  		// Useful functions
- 		MachMatrix<T>& transpose(const MachMatrix<T>&);
+ 		MachMatrix<T> transpose();
  		
  		// Operator overloading
  		Row<T> operator[](size_t index) const { return matrix[index]; }
@@ -32,33 +36,48 @@
  	private:
  		vector<Row<T> > matrix;
  		vector<Row<T> > transposedMatrix;
- 		bool hasBeenTransposed = false;
+ 		bool hasBeenTransposed = false; // flag so that transpose() only runs when necessary
  };
  
  
+ /* Transpose a MachMatrix
+  *
+  * std::invalid_argument is thrown if the matrix is empty
+  * 
+  * The transposed matrix is saved internally, so if the matrix is not
+  * modified, the transpose can be returned immediately.
+  */
  template <typename T>
- MachMatrix<T>& MachMatrix<T>::transpose(const MachMatrix<T>& mat) {
+ MachMatrix<T> MachMatrix<T>::transpose() {
+ 	// Check if matrix is empty
  	if (matrix.empty()) {
  		lastError = "Attempted to transpose empty matrix.";
  		throw std::invalid_argument(lastError);
- 	} else if (hasBeenTransposed) {
+ 	} else if (hasBeenTransposed) { 
+ 	// transpose already exists
  		return transposedMatrix;
  	}
  	
- 	transposedMatrix.resize(matrix[0].size());
- 	hasBeenTransposed = true;
+ 	if (!transposedMatrix.empty()) {
+ 	// Transpose of older matrix version exists
+ 		transposedMatrix.clear(); // Clear old contents
+ 		transposedMatrix.resize(matrix[0].size()); // Avoid future resizing
+ 	}
  	
- 	for (int col=0; col<matrix[0].size(); col++) {
+ 	// transpose
+ 	for (size_t col=0; col<matrix[0].size(); col++) {
  		Row<T> r;
  		
- 		for (int row=0; row<matrix.size(); row++) {
+ 		for (size_t row=0; row<matrix.size(); row++) {
  			r.push_back(matrix[row][col]);
  		}
  		
  		transposedMatrix.push_back(r);
  	}
  	
- 	return transposedMatrix;
+ 	hasBeenTransposed = true;
+ 	
+ 	return MachMatrix<T>(transposedMatrix);
  }
  
  
@@ -93,7 +112,7 @@
 	 		T sumOfProducts = 0;
 	 		
  			for (size_t k = 0; k < numColumnsB; k++) {
- 				sumOfProducts += matrix[i][k] * matB[k][i];
+ 				sumOfProducts += matrix[i][k] * matB[k][j];
  			}
  			
  			r.push_back(sumOfProducts);

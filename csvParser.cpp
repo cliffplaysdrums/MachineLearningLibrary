@@ -93,7 +93,7 @@
  		Row<MachDouble> r;
  		
  		for (int j=0; j<3; j++) {
- 			r.push_back(1);
+ 			r.push_back(j);
  		}
  		
  		A.push_back(r);
@@ -104,7 +104,7 @@
  	
  	for (int i=0; i<3; i++) {
  		for (int j=0; j<3; j++) {
- 			cout << C[i][j] << " ";
+ 			cout << C.transpose()[i][j] << " ";
  		}
  		
  		cout << endl;
