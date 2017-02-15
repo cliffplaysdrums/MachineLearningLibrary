@@ -9,7 +9,6 @@
   * Return int from push_back for error checking.
   */
   
- #include <stdexcept>
  
  template <typename T> class MachMatrix {
  	public:
@@ -17,20 +16,21 @@
  		
  		// Constructors
  		MachMatrix() { lastError = ""; }
- 		MachMatrix(const vector<Row<T> >& copyFrom) {
+ 		MachMatrix(const vector<Row<T> > copyFrom) {
  			lastError = "";
  			matrix = copyFrom;
  		}
  		// Common vector functions
- 		void push_back(Row<T>& r) { matrix.push_back(r); hasBeenTransposed = false; }
+ 		void push_back(Row<T> r) { matrix.push_back(r); hasBeenTransposed = false; }
  		size_t size() const { return matrix.size(); }
  		bool empty() const { return matrix.empty(); }
  		
  		// Useful functions
  		MachMatrix<T> transpose();
+ 		MachMatrix<T> timesTransposeOf(const MachMatrix<T>&);
  		
  		// Operator overloading
- 		Row<T> operator[](size_t index) const { return matrix[index]; }
+ 		Row<T> operator[](const size_t& index) const { return matrix[index]; }
  		MachMatrix<T> operator*(const MachMatrix<T>&);
  
  	private:
@@ -38,6 +38,19 @@
  		vector<Row<T> > transposedMatrix;
  		bool hasBeenTransposed = false; // flag so that transpose() only runs when necessary
  };
+ 
+ 
+ /* Multiplies this MachMatrix by the transpose of another
+  *
+  * This is faster than transposing and then performing matrix multiplication
+  */
+ template <typename T>
+ MachMatrix<T> MachMatrix<T>::timesTransposeOf(const MachMatrix<T>& matB) {
+ 	// for i
+ 		// for j
+ 			// row = matrix[i] * matB[j]
+ 			// result.push_back(row)
+ }
  
  
  /* Transpose a MachMatrix

@@ -75,6 +75,17 @@
  
  
  /*********************************************/
+ void printMatrix(MachMatrix<MachDouble> mat) {
+ 	using namespace std;
+ 	for (size_t i=0; i<mat.size(); i++) {
+ 		for (size_t j=0; j<mat[0].size(); j++) {
+ 			cout << mat[i][j] << " ";
+ 		}
+ 		
+ 		cout << endl;
+ 	}
+ }
+ 
  int main() {
  	using std::cout;
  	using std::endl;
@@ -88,26 +99,12 @@
  	cout << "Testing Mach Matrix" << endl;
  	
  	MachMatrix<MachDouble> A, B, C;
+ 	A.push_back(fileContents.data[0]);
+ 	A.push_back(fileContents.data[1]);
  	
- 	for (int i=0; i<3; i++) {
- 		Row<MachDouble> r;
- 		
- 		for (int j=0; j<3; j++) {
- 			r.push_back(j);
- 		}
- 		
- 		A.push_back(r);
- 		B.push_back(r);
- 	}
+ 	printMatrix(A);
+ 	cout << endl;
+ 	printMatrix(A.transpose());
  	
- 	C = A * B;
- 	
- 	for (int i=0; i<3; i++) {
- 		for (int j=0; j<3; j++) {
- 			cout << C.transpose()[i][j] << " ";
- 		}
- 		
- 		cout << endl;
- 	}
  	return 0;
  }

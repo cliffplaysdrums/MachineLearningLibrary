@@ -46,12 +46,17 @@ Row<T>::Row() {
 }
 
 
-/* Overload Row<T> * Row<T> to return a sum of products of the corresponding 
- element of 2 rows */
+/* Overload Row<T> * Row<T>
+ * 
+ * Returns a sum of products of the corresponding element of 2 rows 
+ *
+ * std::invalid_argument is thrown if the row lengths do not match
+ */
 template <typename T>
 T Row<T>::operator*(const Row<T>& other) {
 	if (contents.size() != other.contents.size()) {
-		lastError = "Multiplied to multiply 2 rows of different lengths";
+		lastError = "Attempted to multiply 2 rows of different lengths";
+		throw std::invalid_argument(lastError);
 	}
 	
 	T sumOfProducts = 0;
