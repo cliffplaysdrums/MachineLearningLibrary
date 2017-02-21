@@ -10,7 +10,8 @@
   */
   
  
- template <typename T> class MachMatrix {
+ template <typename T> 
+ class MachMatrix {
  	public:
  		string lastError;
  		
@@ -46,10 +47,18 @@
   */
  template <typename T>
  MachMatrix<T> MachMatrix<T>::timesTransposeOf(const MachMatrix<T>& matB) {
- 	// for i
- 		// for j
- 			// row = matrix[i] * matB[j]
- 			// result.push_back(row)
+ 	// A is M x N  |  B is K x N  |  B transposed is N x K  |  C is N x K
+ 	MachMatrix<T> result;
+ 	for (Row<T> rowA : matrix) {
+ 		Row<T> rowC;
+ 		for (Row<T> rowB : matB) {
+ 			rowC.push_back(rowA * rowB);
+ 		}
+ 		
+ 		result.push_back(rowC);
+ 	}
+ 	
+ 	return result;
  }
  
  
@@ -115,6 +124,7 @@
  	}
  	
  	size_t numRowsA = matrix.size();
+ 	size_t numColumnsA = matrix[0].size();
  	size_t numColumnsB = matB[0].size();
  	MachMatrix<T> result;
  	
@@ -124,7 +134,7 @@
  		for (size_t j = 0; j < numColumnsB; j++) {
 	 		T sumOfProducts = 0;
 	 		
- 			for (size_t k = 0; k < numColumnsB; k++) {
+ 			for (size_t k = 0; k < numColumnsA; k++) {
  				sumOfProducts += matrix[i][k] * matB[k][j];
  			}
  			
