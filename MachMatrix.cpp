@@ -12,6 +12,10 @@
  
  template <typename T> 
  class MachMatrix {
+ 
+ 	typedef typename vector<Row<T>>::iterator iterator;
+	typedef typename vector<Row<T>>::const_iterator const_iterator;
+ 	
  	public:
  		string lastError;
  		
@@ -33,6 +37,10 @@
  		// Operator overloading
  		Row<T> operator[](const size_t& index) const { return matrix[index]; }
  		MachMatrix<T> operator*(const MachMatrix<T>&);
+ 		
+ 		// For iteration
+ 		const_iterator begin() const { return matrix.begin(); }
+ 		const_iterator end() const { return matrix.end(); }
  
  	private:
  		vector<Row<T> > matrix;
@@ -47,7 +55,8 @@
   */
  template <typename T>
  MachMatrix<T> MachMatrix<T>::timesTransposeOf(const MachMatrix<T>& matB) {
- 	// A is M x N  |  B is K x N  |  B transposed is N x K  |  C is N x K
+ 	// Dimensions
+ 	// A: (M x N)  |  B: (K x N)  |  B transposed: (N x K)  |  C: (N x K)
  	MachMatrix<T> result;
  	for (Row<T> rowA : matrix) {
  		Row<T> rowC;

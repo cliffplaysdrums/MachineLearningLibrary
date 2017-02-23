@@ -92,19 +92,19 @@
  	
  	Parser P;
  	P.parse("Datasets/iris.csv");
- 	long double test = 1.0;
  	fileContents_t fileContents = *(P.getData());
- 	cout << test * fileContents.data[0] << endl;
  	
  	cout << "Testing Mach Matrix" << endl;
  	
  	MachMatrix<MachDouble> A, B, C;
  	A.push_back(fileContents.data[0]);
  	A.push_back(fileContents.data[1]);
+ 	B.push_back(fileContents.data[2]);
+ 	C = A * B.transpose();
  	
- 	printMatrix(A);
+ 	printMatrix(A * B.transpose());
  	cout << endl;
- 	printMatrix(A.transpose());
+ 	printMatrix(A.timesTransposeOf(B));
  	
  	return 0;
  }
