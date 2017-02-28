@@ -102,6 +102,8 @@
  	B.push_back(fileContents.data[2]);
  	C = A * B.transpose();
  	
+ 	cout << 3 * A[0] << endl;
+ 	
  	printMatrix(A * B.transpose());
  	cout << endl;
  	printMatrix(A.timesTransposeOf(B));

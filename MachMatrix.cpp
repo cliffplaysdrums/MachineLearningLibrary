@@ -13,6 +13,7 @@
  template <typename T> 
  class MachMatrix {
  
+ 	// typename is mandatory before a qualified dependent type
  	typedef typename vector<Row<T>>::iterator iterator;
 	typedef typename vector<Row<T>>::const_iterator const_iterator;
  	
@@ -26,7 +27,7 @@
  			matrix = copyFrom;
  		}
  		// Common vector functions
- 		void push_back(Row<T> r) { matrix.push_back(r); hasBeenTransposed = false; }
+ 		void push_back(const Row<T>& r) { matrix.push_back(r); hasBeenTransposed = false; }
  		size_t size() const { return matrix.size(); }
  		bool empty() const { return matrix.empty(); }
  		

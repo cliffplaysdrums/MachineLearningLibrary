@@ -16,12 +16,17 @@
 #include "headers.h"
 
 // Prototypes
-template <typename T> T operator*(const T&, const Row<T>&);
+template <typename T>
+MachDouble operator*(const int&, const Row<T>&);
 
  
 template <typename T> class Row {
+
+	// typename is mandatory before a qualified dependent type
+ 	typedef typename vector<T>::iterator iterator;
+	typedef typename vector<T>::const_iterator const_iterator;
+	
 	public:
-		vector<T> contents;
 		string lastError; // error message to aid debugging
 		
 		Row(); // constructor
@@ -29,13 +34,20 @@ template <typename T> class Row {
 		// public functions
 		void push_back(T item) { contents.push_back(item); }
 		void pop_back() { contents.pop_back(); }
-		size_t size() { return contents.size(); }
-		bool empty() { return contents.size(); }
+		size_t size() const { return contents.size(); }
+		bool empty() const { return contents.empty(); }
 		
 		// operator overloading
 		T operator*(const Row<T>&);
 		T operator*(const T&);
 		T operator[](const size_t& index) { return contents[index]; };
+		
+		// For iteration
+ 		const_iterator begin() const { return contents.begin(); }
+ 		const_iterator end() const { return contents.end(); }
+		
+	private:
+		vector<T> contents;
 };
 
 
@@ -84,12 +96,12 @@ T Row<T>::operator*(const T& other) {
 }
 
 
-/* Overload T * Row<T> to return a sum of products */
+/* Overload MachDouble * Row<T> to return a sum of products */
 template <typename T>
-T operator*(const T& primitive, const Row<T>& other) {
-	T sumOfProducts = 0;
+MachDouble operator*(const int& primitive, const Row<T>& other) {
+	MachDouble sumOfProducts = 0;
 	
-	for (T elem : other.contents) {
+	for (MachDouble elem : other) {
 		sumOfProducts += elem * primitive;
 	}
 	
