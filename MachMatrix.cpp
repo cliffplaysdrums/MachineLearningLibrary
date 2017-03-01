@@ -33,7 +33,7 @@
  		
  		// Useful functions
  		MachMatrix<T> transpose();
- 		MachMatrix<T> timesTransposeOf(const MachMatrix<T>&);
+ 		MachMatrix<T> timesTransposeOf(const MachMatrix<T>&) const;
  		
  		// Operator overloading
  		Row<T> operator[](const size_t& index) const { return matrix[index]; }
@@ -55,7 +55,7 @@
   * This is faster than transposing and then performing matrix multiplication
   */
  template <typename T>
- MachMatrix<T> MachMatrix<T>::timesTransposeOf(const MachMatrix<T>& matB) {
+ MachMatrix<T> MachMatrix<T>::timesTransposeOf(const MachMatrix<T>& matB) const {
  	// Dimensions
  	// A: (M x N)  |  B: (K x N)  |  B transposed: (N x K)  |  C: (N x K)
  	MachMatrix<T> result;
