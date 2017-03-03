@@ -48,12 +48,14 @@ template <typename T> class Row {
 		
 	private:
 		vector<T> contents;
+		size_t hwThreads;
 };
 
 
 /* Constructor */
 template <typename T> 
 Row<T>::Row() {
+	hwThreads = std::thread::hardware_concurrency();
 	lastError = "";
 }
 

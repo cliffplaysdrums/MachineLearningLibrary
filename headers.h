@@ -8,6 +8,7 @@
  
  #pragma once
  
+ #include <thread>
  #include <vector>
  #include <string>
  #include "headers/types.h"

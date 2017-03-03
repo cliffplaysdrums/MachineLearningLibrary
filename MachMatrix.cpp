@@ -21,7 +21,7 @@
  		string lastError;
  		
  		// Constructors
- 		MachMatrix() { lastError = ""; }
+ 		MachMatrix();
  		MachMatrix(const vector<Row<T> > copyFrom) {
  			lastError = "";
  			matrix = copyFrom;
@@ -47,7 +47,15 @@
  		vector<Row<T> > matrix;
  		vector<Row<T> > transposedMatrix;
  		bool hasBeenTransposed = false; // flag so that transpose() only runs when necessary
+ 		size_t hwThreads;
  };
+ 
+ 
+ template <typename T>
+ MachMatrix<T>::MachMatrix() {
+ 	hwThreads = std::thread::hardware_concurrency();
+ 	lastError = "";
+ }
  
  
  /* Multiplies this MachMatrix by the transpose of another
