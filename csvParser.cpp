@@ -18,6 +18,9 @@
  #include <fstream>
  #include <sstream>
  #include "headers.h"
+ 
+ using Mach::Row;
+ using Mach::MachMatrix;
   
  /* Container for all data gained from file */
  typedef struct {

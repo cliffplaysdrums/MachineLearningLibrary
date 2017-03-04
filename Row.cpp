@@ -15,10 +15,21 @@
  
 #include "headers.h"
 
-// Prototypes
-template <typename T>
-MachDouble operator*(const int&, const Row<T>&);
 
+/* Overload MachDouble * Row<T> to return a sum of products */
+template <typename T>
+MachDouble operator*(const int primitive, const Mach::Row<T>& other) {
+	MachDouble sumOfProducts = 0;
+	
+	for (MachDouble elem : other) {
+		sumOfProducts += elem * primitive;
+	}
+	
+	return sumOfProducts;
+}
+
+
+namespace Mach {
  
 template <typename T> class Row {
 
@@ -48,14 +59,12 @@ template <typename T> class Row {
 		
 	private:
 		vector<T> contents;
-		size_t hwThreads;
 };
 
 
 /* Constructor */
 template <typename T> 
 Row<T>::Row() {
-	hwThreads = std::thread::hardware_concurrency();
 	lastError = "";
 }
 
@@ -97,16 +106,6 @@ T Row<T>::operator*(const T& other) {
 	return sumOfProducts;
 }
 
+} // end namespace
 
-/* Overload MachDouble * Row<T> to return a sum of products */
-template <typename T>
-MachDouble operator*(const int& primitive, const Row<T>& other) {
-	MachDouble sumOfProducts = 0;
-	
-	for (MachDouble elem : other) {
-		sumOfProducts += elem * primitive;
-	}
-	
-	return sumOfProducts;
-}
 

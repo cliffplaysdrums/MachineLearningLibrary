@@ -16,7 +16,10 @@
 using std::string;
 using std::vector;
 
-template <typename T> class Row; // forward declaration necessary
+namespace Mach { 
+	template <typename T> class Row; // forward declaration necessary
+	const size_t hwThreads = std::thread::hardware_concurrency();
+}
  
 typedef long double MachDouble;
-//typedef vector<Row<MachDouble> > MachMatrix;
+

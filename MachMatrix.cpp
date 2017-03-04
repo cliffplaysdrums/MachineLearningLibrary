@@ -9,6 +9,8 @@
   * Return int from push_back for error checking.
   */
   
+ namespace Mach {
+  
  
  template <typename T> 
  class MachMatrix {
@@ -47,13 +49,11 @@
  		vector<Row<T> > matrix;
  		vector<Row<T> > transposedMatrix;
  		bool hasBeenTransposed = false; // flag so that transpose() only runs when necessary
- 		size_t hwThreads;
  };
  
  
  template <typename T>
  MachMatrix<T>::MachMatrix() {
- 	hwThreads = std::thread::hardware_concurrency();
  	lastError = "";
  }
  
@@ -164,4 +164,6 @@
  	
  	return result;
  }
+ 
+ } // end namespace
  
