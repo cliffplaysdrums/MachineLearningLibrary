@@ -8,7 +8,7 @@
  
  #pragma once
  
- #include <thread>
+ #include <future>
  #include <vector>
  #include <string>
  #include "headers/types.h"

@@ -43,7 +43,7 @@ template <typename T> class Row {
 		Row(); // constructor
 		
 		// public functions
-		void push_back(T item) { contents.push_back(item); }
+		void push_back(const T& item) { contents.push_back(item); }
 		void pop_back() { contents.pop_back(); }
 		size_t size() const { return contents.size(); }
 		bool empty() const { return contents.empty(); }

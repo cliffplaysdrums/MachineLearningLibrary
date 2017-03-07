@@ -24,7 +24,7 @@
  		
  		// Constructors
  		MachMatrix();
- 		MachMatrix(const vector<Row<T> > copyFrom) {
+ 		MachMatrix(const vector<Row<T> >& copyFrom) {
  			lastError = "";
  			matrix = copyFrom;
  		}
@@ -40,6 +40,10 @@
  		// Operator overloading
  		Row<T> operator[](const size_t& index) const { return matrix[index]; }
  		MachMatrix<T> operator*(const MachMatrix<T>&);
+ 		MachMatrix<T> parallelMultiply(const MachMatrix<T>&); // this will replace operator*
+ 		
+ 		// Helper functions
+ 		
  		
  		// For iteration
  		const_iterator begin() const { return matrix.begin(); }
@@ -163,6 +167,12 @@
  	}
  	
  	return result;
+ }
+ 
+ 
+ template <typename T>
+ MachMatrix<T> MachMatrix<T>::parallelMultiply(const MachMatrix<T>& matB) {
+ 
  }
  
  } // end namespace
