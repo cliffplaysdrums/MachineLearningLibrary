@@ -9,6 +9,7 @@
  #pragma once
  
  #include <future>
+ #include <memory>
  #include <vector>
  #include <string>
  #include "headers/types.h"

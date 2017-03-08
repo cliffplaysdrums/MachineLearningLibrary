@@ -43,7 +43,8 @@
  		MachMatrix<T> parallelMultiply(const MachMatrix<T>&); // this will replace operator*
  		
  		// Helper functions
- 		
+		int parMulHelp(std::shared_ptr<MachMatrix<T>>, 
+			std::shared_ptr<MachMatrix<T>>,	const size_t, const size_t); 
  		
  		// For iteration
  		const_iterator begin() const { return matrix.begin(); }
@@ -138,7 +139,6 @@
  		lastError = "One of the matrices was empty.";
  		throw std::invalid_argument(lastError);
  	}
- 	
  	// Check inner matrix dimensions
  	if (matrix[0].size() != matB.size()) {
  		lastError = "Inner dimensions of matrices must match when multiplying.";
@@ -172,8 +172,34 @@
  
  template <typename T>
  MachMatrix<T> MachMatrix<T>::parallelMultiply(const MachMatrix<T>& matB) {
- 
+ 	// Check if either argument is empty
+ 	if (matrix.empty() || matB.empty()) {
+ 		lastError = "One of the matrices was empty.";
+ 		throw std::invalid_argument(lastError);
+ 	}
+ 	// Check inner matrix dimensions
+ 	if (matrix[0].size() != matB.size()) {
+ 		lastError = "Inner dimensions of matrices must match when multiplying.";
+ 		throw std::invalid_argument(lastError);
+ 	}
+ 	
+ 	size_t numRowsA = matrix.size();
+ 	size_t numColumnsA = matrix[0].size();
+ 	size_t numColumnsB = matB[0].size();
+ 	MachMatrix<T> result;
+ 	
  }
+ 
+ 
+template <typename T>
+int MachMatrix<T>::parMulHelp(
+	std::shared_ptr<MachMatrix<T>> result, 
+	std::shared_ptr<MachMatrix<T>> matB, 
+	const size_t start, const size_t stop) 
+{
+	
+	return 0;
+}
  
  } // end namespace
  
