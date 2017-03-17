@@ -38,7 +38,6 @@ template <typename T> class Row {
 	typedef typename vector<T>::const_iterator const_iterator;
 	
 	public:
-		string lastError; // error message to aid debugging
 		
 		Row(); // constructor
 		
@@ -49,9 +48,9 @@ template <typename T> class Row {
 		bool empty() const { return contents.empty(); }
 		
 		// operator overloading
-		T operator*(const Row<T>&);
-		T operator*(const T&);
-		T operator[](const size_t& index) { return contents[index]; };
+		T operator*(const Row<T>&) const;
+		T operator*(const T&) const;
+		T operator[](const size_t& index) const { return contents[index]; };
 		
 		// For iteration
  		const_iterator begin() const { return contents.begin(); }
@@ -65,7 +64,7 @@ template <typename T> class Row {
 /* Constructor */
 template <typename T> 
 Row<T>::Row() {
-	lastError = "";
+
 }
 
 
@@ -76,10 +75,9 @@ Row<T>::Row() {
  * std::invalid_argument is thrown if the row lengths do not match
  */
 template <typename T>
-T Row<T>::operator*(const Row<T>& other) {
+T Row<T>::operator*(const Row<T>& other) const {
 	if (contents.size() != other.contents.size()) {
-		lastError = "Attempted to multiply 2 rows of different lengths";
-		throw std::invalid_argument(lastError);
+		throw std::invalid_argument( "Attempted to multiply 2 rows of different lengths");
 	}
 	
 	T sumOfProducts = 0;
@@ -96,7 +94,7 @@ T Row<T>::operator*(const Row<T>& other) {
 
 /* Overload Row<T> * T to return a sum of products */
 template <typename T>
-T Row<T>::operator*(const T& other) {
+T Row<T>::operator*(const T& other) const {
 	T sumOfProducts = 0;
 	
 	for (T elem : contents) {

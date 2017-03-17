@@ -109,7 +109,7 @@
  	
  	printMatrix(A * B.transpose());
  	cout << endl;
- 	printMatrix(A.timesTransposeOf(B));
+ 	printMatrix(A.parallelMultiply(B));
  	
  	return 0;
  }

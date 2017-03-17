@@ -9,6 +9,8 @@
   * Return int from push_back for error checking.
   */
   
+ #include <functional>
+  
  namespace Mach {
   
  
@@ -20,31 +22,24 @@
 	typedef typename vector<Row<T>>::const_iterator const_iterator;
  	
  	public:
- 		string lastError;
  		
  		// Constructors
- 		MachMatrix();
- 		MachMatrix(const vector<Row<T> >& copyFrom) {
- 			lastError = "";
- 			matrix = copyFrom;
- 		}
+ 		MachMatrix() {};
+ 		MachMatrix(const size_t rowCount) : matrix(rowCount) {};
+ 		MachMatrix(const vector<Row<T> >& copyFrom) { matrix = copyFrom; }
  		// Common vector functions
- 		void push_back(const Row<T>& r) { matrix.push_back(r); hasBeenTransposed = false; }
+ 		void push_back(const Row<T>& r) { matrix.push_back(r); }
  		size_t size() const { return matrix.size(); }
  		bool empty() const { return matrix.empty(); }
  		
  		// Useful functions
- 		MachMatrix<T> transpose();
+ 		MachMatrix<T> transpose() const;
  		MachMatrix<T> timesTransposeOf(const MachMatrix<T>&) const;
  		
  		// Operator overloading
- 		Row<T> operator[](const size_t& index) const { return matrix[index]; }
- 		MachMatrix<T> operator*(const MachMatrix<T>&);
- 		MachMatrix<T> parallelMultiply(const MachMatrix<T>&); // this will replace operator*
- 		
- 		// Helper functions
-		int parMulHelp(std::shared_ptr<MachMatrix<T>>, 
-			std::shared_ptr<MachMatrix<T>>,	const size_t, const size_t); 
+ 		Row<T> operator[](const size_t index) const { return matrix[index]; }
+ 		MachMatrix<T> operator*(const MachMatrix<T>&) const;
+ 		MachMatrix<T> parallelMultiply(const MachMatrix<T>&) const; // this will replace operator*
  		
  		// For iteration
  		const_iterator begin() const { return matrix.begin(); }
@@ -52,15 +47,11 @@
  
  	private:
  		vector<Row<T> > matrix;
- 		vector<Row<T> > transposedMatrix;
- 		bool hasBeenTransposed = false; // flag so that transpose() only runs when necessary
+ 		
+ 		// Helper functions
+		int parMulHelp(MachMatrix<T>& result, const MachMatrix<T> matB, 
+			const size_t start, const size_t stop) const; 
  };
- 
- 
- template <typename T>
- MachMatrix<T>::MachMatrix() {
- 	lastError = "";
- }
  
  
  /* Multiplies this MachMatrix by the transpose of another
@@ -88,26 +79,15 @@
  /* Transpose a MachMatrix
   *
   * std::invalid_argument is thrown if the matrix is empty
-  * 
-  * The transposed matrix is saved internally, so if the matrix is not
-  * modified, the transpose can be returned immediately.
   */
  template <typename T>
- MachMatrix<T> MachMatrix<T>::transpose() {
+ MachMatrix<T> MachMatrix<T>::transpose() const {
  	// Check if matrix is empty
  	if (matrix.empty()) {
- 		lastError = "Attempted to transpose empty matrix.";
- 		throw std::invalid_argument(lastError);
- 	} else if (hasBeenTransposed) { 
- 	// transpose already exists
- 		return transposedMatrix;
+ 		throw std::invalid_argument("Attempted to transpose empty matrix.");
  	}
  	
- 	if (!transposedMatrix.empty()) {
- 	// Transpose of older matrix version exists
- 		transposedMatrix.clear(); // Clear old contents
- 		transposedMatrix.resize(matrix[0].size()); // Avoid future resizing
- 	}
+ 	MachMatrix<T> transposedMatrix(matrix[0].size());
  	
  	// transpose
  	for (size_t col=0; col<matrix[0].size(); col++) {
@@ -120,9 +100,7 @@
  		transposedMatrix.push_back(r);
  	}
  	
- 	hasBeenTransposed = true;
- 	
- 	return MachMatrix<T>(transposedMatrix);
+ 	return transposedMatrix;
  }
  
  
@@ -133,16 +111,14 @@
   *   - the inner dimensions of the matrices don't match
   */
  template <typename T>
- MachMatrix<T> MachMatrix<T>::operator*(const MachMatrix<T>& matB) {
+ MachMatrix<T> MachMatrix<T>::operator*(const MachMatrix<T>& matB) const {
  	// Check if either argument is empty
  	if (matrix.empty() || matB.empty()) {
- 		lastError = "One of the matrices was empty.";
- 		throw std::invalid_argument(lastError);
+ 		throw std::invalid_argument("One of the matrices was empty.");
  	}
  	// Check inner matrix dimensions
  	if (matrix[0].size() != matB.size()) {
- 		lastError = "Inner dimensions of matrices must match when multiplying.";
- 		throw std::invalid_argument(lastError);
+ 		throw std::invalid_argument("Inner dimensions of matrices must match when multiplying.");
  	}
  	
  	size_t numRowsA = matrix.size();
@@ -171,32 +147,54 @@
  
  
  template <typename T>
- MachMatrix<T> MachMatrix<T>::parallelMultiply(const MachMatrix<T>& matB) {
+ MachMatrix<T> MachMatrix<T>::parallelMultiply(const MachMatrix<T>& matB) const {
  	// Check if either argument is empty
  	if (matrix.empty() || matB.empty()) {
- 		lastError = "One of the matrices was empty.";
- 		throw std::invalid_argument(lastError);
+ 		throw std::invalid_argument("One of the matrices was empty.");
  	}
  	// Check inner matrix dimensions
  	if (matrix[0].size() != matB.size()) {
- 		lastError = "Inner dimensions of matrices must match when multiplying.";
- 		throw std::invalid_argument(lastError);
+ 		throw std::invalid_argument("Inner dimensions of matrices must match when multiplying.");
  	}
  	
  	size_t numRowsA = matrix.size();
- 	size_t numColumnsA = matrix[0].size();
- 	size_t numColumnsB = matB[0].size();
- 	MachMatrix<T> result;
+ 	//size_t numColumnsA = matrix[0].size();
+ 	//size_t numColumnsB = matB[0].size();
+ 	size_t interval = numRowsA / hwThreads;
+ 	size_t stop;
+ 	MachMatrix<T> result(numRowsA);
+ 	vector<std::future<int>> handles;
+ 	
+ 	// NOTE: This is only faster when there are more rows than hardware threads
+ 	for (size_t ix = 0; ix < hwThreads; ix++) {
+ 		if (ix + 1 == hwThreads) {
+ 			stop = hwThreads;
+ 		} else {
+ 			stop = (ix + 1) * interval;
+ 		}
+ 		
+ 		handles.push_back(std::async(std::launch::async, &MachMatrix<T>::parMulHelp, this, std::ref(result),
+ 			matB.transpose(), ix*interval, stop));
+ 	}
+ 	
+ 	for (size_t ix =0; ix < hwThreads; ix++) {
+ 		handles[ix].wait();
+ 	}
+ 	
+ 	return result;
  	
  }
  
- 
+// Assumes matB has already been transposed for faster memory access
 template <typename T>
-int MachMatrix<T>::parMulHelp(
-	std::shared_ptr<MachMatrix<T>> result, 
-	std::shared_ptr<MachMatrix<T>> matB, 
-	const size_t start, const size_t stop) 
+int MachMatrix<T>::parMulHelp(MachMatrix<T>& result, 
+	const MachMatrix<T> matB, const size_t start, const size_t stop) const
 {
+	for (size_t rowA = start; rowA < stop; rowA++) {
+		for (size_t rowB = 0; rowB < matB.size(); rowB++) {
+			result[rowA].push_back(matrix[rowA] * matB[rowB]);
+		}
+	}
 	
 	return 0;
 }
