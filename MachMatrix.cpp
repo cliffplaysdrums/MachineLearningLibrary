@@ -8,11 +8,13 @@
  /* TODO:
   * Return int from push_back for error checking.
   */
-  
- #include <functional>
+ 
+ #include <iostream>
   
  namespace Mach {
   
+ using std::cout;
+ using std::endl;
  
  template <typename T> 
  class MachMatrix {
@@ -27,10 +29,14 @@
  		MachMatrix() {};
  		MachMatrix(const size_t rowCount) : matrix(rowCount) {};
  		MachMatrix(const vector<Row<T> >& copyFrom) { matrix = copyFrom; }
+ 		
  		// Common vector functions
  		void push_back(const Row<T>& r) { matrix.push_back(r); }
  		size_t size() const { return matrix.size(); }
  		bool empty() const { return matrix.empty(); }
+ 		void reserve(size_t n) { matrix.reserve(n); };
+ 		void resize(size_t n) { matrix.resize(n); };
+ 		void resize(size_t n, Row<T> r) { matrix.resize(n, r); };
  		
  		// Useful functions
  		MachMatrix<T> transpose() const;
@@ -49,8 +55,7 @@
  		vector<Row<T> > matrix;
  		
  		// Helper functions
-		int parMulHelp(MachMatrix<T>& result, const MachMatrix<T> matB, 
-			const size_t start, const size_t stop) const; 
+		Row<T> parMulHelp(const MachMatrix<T> matB, const size_t rowA) const;
  };
  
  
@@ -87,8 +92,8 @@
  		throw std::invalid_argument("Attempted to transpose empty matrix.");
  	}
  	
- 	MachMatrix<T> transposedMatrix(matrix[0].size());
- 	
+ 	MachMatrix<T> transposedMatrix;
+ 	transposedMatrix.reserve(matrix[0].size()); // preallocate memory
  	// transpose
  	for (size_t col=0; col<matrix[0].size(); col++) {
  		Row<T> r;
@@ -154,50 +159,46 @@
  	}
  	// Check inner matrix dimensions
  	if (matrix[0].size() != matB.size()) {
- 		throw std::invalid_argument("Inner dimensions of matrices must match when multiplying.");
+ 		string errorMsg = "Inner dimensions of matrices must match when multiplying.";
+		errorMsg.append(" Thrown from MachMatrix<T>::parallelMultiply()");
+ 		throw std::invalid_argument(errorMsg);
  	}
  	
  	size_t numRowsA = matrix.size();
  	//size_t numColumnsA = matrix[0].size();
- 	//size_t numColumnsB = matB[0].size();
- 	size_t interval = numRowsA / hwThreads;
- 	size_t stop;
- 	MachMatrix<T> result(numRowsA);
- 	vector<std::future<int>> handles;
+ 	size_t numColumnsB = matB[0].size();
+ 	//size_t interval = numRowsA / hwThreads;
+ 	MachMatrix<T> result;
+ 	Row<T> r(numColumnsB);
+ 	result.reserve(numRowsA);
+ 	vector<std::future<Row<T>>> handles;
  	
  	// NOTE: This is only faster when there are more rows than hardware threads
- 	for (size_t ix = 0; ix < hwThreads; ix++) {
- 		if (ix + 1 == hwThreads) {
- 			stop = hwThreads;
- 		} else {
- 			stop = (ix + 1) * interval;
- 		}
- 		
- 		handles.push_back(std::async(std::launch::async, &MachMatrix<T>::parMulHelp, this, std::ref(result),
- 			matB.transpose(), ix*interval, stop));
+ 	for (size_t ix = 0; ix < numRowsA; ix++) {
+ 		handles.push_back(std::async(std::launch::async, 
+ 			&MachMatrix<T>::parMulHelp, this, matB.transpose(), ix));
  	}
  	
- 	for (size_t ix =0; ix < hwThreads; ix++) {
- 		handles[ix].wait();
+ 	for (size_t ix =0; ix < numRowsA; ix++) {
+ 		result.push_back(handles[ix].get());
  	}
  	
  	return result;
  	
  }
  
-// Assumes matB has already been transposed for faster memory access
-template <typename T>
-int MachMatrix<T>::parMulHelp(MachMatrix<T>& result, 
-	const MachMatrix<T> matB, const size_t start, const size_t stop) const
-{
-	for (size_t rowA = start; rowA < stop; rowA++) {
-		for (size_t rowB = 0; rowB < matB.size(); rowB++) {
-			result[rowA].push_back(matrix[rowA] * matB[rowB]);
-		}
+ // Assumes matB has already been transposed for faster memory access
+ template <typename T>
+ Row<T> MachMatrix<T>::parMulHelp(const MachMatrix<T> matB, const size_t rowA) 
+ 	const
+ {
+	Row<T> r;
+	for (size_t rowB = 0; rowB < matB.size(); rowB++) {
+		r.push_back(matrix[rowA] * matB[rowB]);
 	}
-	
-	return 0;
-}
+	 
+	 return r;
+ }
  
  } // end namespace
  

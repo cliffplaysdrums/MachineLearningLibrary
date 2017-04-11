@@ -40,6 +40,7 @@ template <typename T> class Row {
 	public:
 		
 		Row(); // constructor
+		Row(size_t n) { contents.reserve(n); }
 		
 		// public functions
 		void push_back(const T& item) { contents.push_back(item); }
@@ -84,7 +85,7 @@ T Row<T>::operator*(const Row<T>& other) const {
 	size_t index = 0;
 	
 	for(T elem : contents) {
-		sumOfProducts += elem * other.contents[index];
+		sumOfProducts += elem * other[index];
 		index++;
 	}
 	

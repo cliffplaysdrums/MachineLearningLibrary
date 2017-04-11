@@ -18,7 +18,7 @@ using std::vector;
 
 namespace Mach { 
 	template <typename T> class Row; // forward declaration necessary
-	const size_t hwThreads = std::thread::hardware_concurrency();
+	//const size_t hwThreads = std::thread::hardware_concurrency();
 }
  
 typedef long double MachDouble;

@@ -89,6 +89,7 @@
  	}
  }
  
+ 
  int main() {
  	using std::cout;
  	using std::endl;
@@ -103,13 +104,19 @@
  	A.push_back(fileContents.data[0]);
  	A.push_back(fileContents.data[1]);
  	B.push_back(fileContents.data[2]);
- 	C = A * B.transpose();
+
+ 	B = B.transpose();
  	
- 	cout << 3 * A[0] << endl;
+ 	cout << "A:" << endl;
+ 	printMatrix(A);
+ 	cout << "B:" << endl;
+ 	printMatrix(B);
  	
- 	printMatrix(A * B.transpose());
- 	cout << endl;
- 	printMatrix(A.parallelMultiply(B));
+ 	cout << "A*B" << endl;
+ 	printMatrix(A * B);
+ 	cout << endl << "Parallel:" << endl;
+ 	C = A.parallelMultiply(B);
+ 	printMatrix(C);
  	
  	return 0;
  }
